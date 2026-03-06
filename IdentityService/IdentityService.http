@@ -1,0 +1,23 @@
+@IdentityService_HostAddress = http://localhost:5047
+
+GET {{IdentityService_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
+### Login
+POST {{IdentityService_HostAddress}}/api/auth/login
+Content-Type: application/json
+Accept: application/json
+
+{
+  "email": "admin@wcc.com",
+  "password": "Admin123*"
+}
+### Refresh
+POST {{IdentityService_HostAddress}}/api/auth/refresh
+Content-Type: application/json
+Accept: application/json
+
+{
+  "refreshToken": "QD3y+aXnsYFubCXS5BabUNJMfCjB/a6EHWTKGrtBKyzEw4e1BPceOsmjLSlvo5KQq+6pe+LFI7NmerTnQfbbjw=="
+}

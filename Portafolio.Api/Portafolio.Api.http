@@ -1,0 +1,36 @@
+@Portafolio.Api_HostAddress = http://localhost:5170
+
+GET {{Portafolio.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+### Crear Portfolio Profile
+POST {{Portafolio.Api_HostAddress}}/api/PortfolioProfiles
+Content-Type: application/json
+Accept: application/json
+
+{
+  "fullName": "World Cloud ColombIA",
+  "headline": "Fullstack .NET | Microservices | Azure",
+  "summary": "Perfil de portafolio para mostrar proyectos, experiencia y stack.",
+  "location": "Colombia",
+  "publicEmail": "contacto@wcc.com"
+}
+
+###
+GET {{Portafolio.Api_HostAddress}}/api/PortfolioProfiles/1ffaacf2-615e-4632-db06-08de795b23ea
+Accept: application/json
+
+### Actualizar
+PUT {{Portafolio.Api_HostAddress}}/api/PortfolioProfiles/1ffaacf2-615e-4632-db06-08de795b23ea
+Content-Type: application/json
+Accept: application/json
+
+{
+  "fullName": "Harold Martin Bermu",
+  "headline": ".NET Backend Developer",
+  "summary": "Desarrollador especializado en APIs REST con .NET y Azure.",
+  "location": "Bogotá, Colombia",
+  "publicEmail": "harold@email.com",
+  "photoUrl": "https://miportafolio.com/photo.jpg",
+  "resumeUrl": "https://miportafolio.com/cv.pdf"
+}
