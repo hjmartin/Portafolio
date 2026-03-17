@@ -1,0 +1,28 @@
+<app-section-shell
+  eyebrow="Angular Standalone"
+  title="Base frontend lista para crecer sin desorden"
+  description="La idea es separar autenticacion, shell y features desde el inicio para que integrar Portafolio, Projects y Technologies no termine en un app.component gigante.">
+  <div class="hero-actions">
+    <a routerLink="/login" class="primary-link">Entrar al admin</a>
+    <a routerLink="/admin/portfolio" class="secondary-link">Ver shell admin</a>
+  </div>
+
+  <div class="pill-row">
+    <app-pill *ngFor="let pillar of pillars" [label]="pillar" />
+  </div>
+
+  <div class="card-grid">
+    <app-info-card
+      title="Publico"
+      text="Landing, perfil publico y futuras vistas orientadas al visitante.">
+    </app-info-card>
+    <app-info-card
+      title="Admin"
+      text="Zona protegida para editar perfil, proyectos y tecnologias via Gateway.">
+    </app-info-card>
+    <app-info-card
+      title="Data access"
+      text="Cada feature tendra su propio client HTTP, mappers y store.">
+    </app-info-card>
+  </div>
+</app-section-shell>

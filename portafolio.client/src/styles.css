@@ -1,1 +1,32 @@
-/* You can add global styles to this file, and also import other style files */
+:root {
+  color-scheme: light;
+  --bg: #f5f3ee;
+  --surface: rgba(255, 255, 255, 0.82);
+  --surface-border: rgba(23, 32, 51, 0.08);
+  --text: #172033;
+  --muted: #4b5563;
+  --accent: #a44a1d;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  color: var(--text);
+  background: var(--bg);
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}

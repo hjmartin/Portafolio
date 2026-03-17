@@ -1,0 +1,30 @@
+.section-shell {
+  display: grid;
+  gap: 1rem;
+}
+
+.eyebrow {
+  margin: 0;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #a44a1d;
+}
+
+h1 {
+  margin: 0;
+  font-size: clamp(2rem, 4vw, 4.2rem);
+  line-height: 0.95;
+}
+
+.description {
+  max-width: 60ch;
+  margin: 0;
+  color: #4b5563;
+  font-size: 1.05rem;
+}
+
+.section-body {
+  padding-top: 1rem;
+}

@@ -1,0 +1,13 @@
+<div class="auth-shell">
+  <header class="topbar">
+    <a routerLink="/" class="brand">Portafolio</a>
+    <nav class="topnav">
+      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Inicio</a>
+      <a routerLink="/login" routerLinkActive="active">Login</a>
+    </nav>
+  </header>
+
+  <main class="auth-content">
+    <router-outlet></router-outlet>
+  </main>
+</div>

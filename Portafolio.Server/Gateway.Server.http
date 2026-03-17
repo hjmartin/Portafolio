@@ -1,1 +1,168 @@
 
+@Gateway_HostAddress = https://localhost:7125
+@adminEmail = admin@wcc.com
+@adminPassword = Admin123*
+@accessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhNmQ3NzAyMy1jMzAxLTRhNTgtYWM5NS04ODhkOGU5NzE4ZWQiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6ImE2ZDc3MDIzLWMzMDEtNGE1OC1hYzk1LTg4OGQ4ZTk3MThlZCIsImVtYWlsIjoiYWRtaW5Ad2NjLmNvbSIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL2VtYWlsYWRkcmVzcyI6ImFkbWluQHdjYy5jb20iLCJqdGkiOiJjMjUwYzExMC1kOTNiLTQxN2QtYTZiMi1hNDJkMDJjMGFlODEiLCJyb2xlIjoiQWRtaW4iLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJBZG1pbiIsIm5iZiI6MTc3Mzc1ODI5MSwiZXhwIjoxNzczNzU5MjUxLCJpc3MiOiJJZGVudGl0eVNlcnZpY2UiLCJhdWQiOiJQb3J0YWZvbGlvUGxhdGZvcm0ifQ.ZX5Lf0rzXnCBM9mA5MeHsvWl84qB_CDe9mKAqcsDV-0
+@refreshToken = REPLACE_WITH_REFRESH_TOKEN
+@profileId = 00000000-0000-0000-0000-000000000000
+@technologyId = 00000000-0000-0000-0000-000000000000
+@projectId = 00000000-0000-0000-0000-000000000000
+
+### Gateway health
+GET {{Gateway_HostAddress}}/healthz
+Accept: application/json
+
+### Secure ping through gateway
+GET {{Gateway_HostAddress}}/secure/ping
+Authorization: Bearer {{accessToken}}
+Accept: application/json
+
+### Login - Identity through Gateway
+POST {{Gateway_HostAddress}}/api/auth/login
+Content-Type: application/json
+Accept: application/json
+
+{
+  "email": "{{adminEmail}}",
+  "password": "{{adminPassword}}"
+}
+
+### Refresh token - Identity through Gateway
+POST {{Gateway_HostAddress}}/api/auth/refresh
+Content-Type: application/json
+Accept: application/json
+
+{
+  "refreshToken": "{{refreshToken}}"
+}
+
+### Create portfolio profile
+POST {{Gateway_HostAddress}}/api/PortfolioProfiles
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "fullName": "Harold Martin",
+  "headline": "Fullstack .NET | Microservices | Azure",
+  "summary": "Perfil de portafolio para mostrar proyectos, experiencia y stack.",
+  "location": "Bogota, Colombia",
+  "publicEmail": "harold@email.com"
+}
+
+### Get portfolio profile by id
+GET {{Gateway_HostAddress}}/api/PortfolioProfiles/{{profileId}}
+Authorization: Bearer {{accessToken}}
+Accept: application/json
+
+### Update portfolio profile
+PUT {{Gateway_HostAddress}}/api/PortfolioProfiles/{{profileId}}
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "fullName": "Harold Martin Bermudez",
+  "headline": ".NET Backend Developer",
+  "summary": "Desarrollador especializado en APIs REST con .NET y Azure.",
+  "location": "Bogota, Colombia",
+  "publicEmail": "harold@email.com",
+  "photoUrl": "https://miportafolio.com/photo.jpg",
+  "resumeUrl": "https://miportafolio.com/cv.pdf"
+}
+
+### Create technology
+POST {{Gateway_HostAddress}}/api/Technologies
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "name": ".NET 9",
+  "iconUrl": "https://cdn.example.com/icons/dotnet.png",
+  "category": "Backend"
+}
+
+### Get all technologies
+GET {{Gateway_HostAddress}}/api/Technologies
+Authorization: Bearer {{accessToken}}
+Accept: application/json
+
+### Get technology by id
+GET {{Gateway_HostAddress}}/api/Technologies/{{technologyId}}
+Authorization: Bearer {{accessToken}}
+Accept: application/json
+
+### Update technology
+PUT {{Gateway_HostAddress}}/api/Technologies/{{technologyId}}
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "name": ".NET 9",
+  "iconUrl": "https://cdn.example.com/icons/dotnet-9.png",
+  "category": "Backend"
+}
+
+### Create project for profile
+POST {{Gateway_HostAddress}}/api/portfolioprofiles/{{profileId}}/projects
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "title": "Portafolio API",
+  "description": "API para administrar perfiles, proyectos y tecnologias.",
+  "liveUrl": "https://api.example.com/portfolio",
+  "repoUrl": "https://github.com/harold/portfolio-api",
+  "coverImageUrl": "https://cdn.example.com/projects/portfolio-api.png",
+  "isFeatured": true,
+  "sortOrder": 1
+}
+
+### Get projects by profile
+GET {{Gateway_HostAddress}}/api/portfolioprofiles/{{profileId}}/projects
+Authorization: Bearer {{accessToken}}
+Accept: application/json
+
+### Get project by id
+GET {{Gateway_HostAddress}}/api/portfolio-projects/{{projectId}}
+Authorization: Bearer {{accessToken}}
+Accept: application/json
+
+### Update project
+PUT {{Gateway_HostAddress}}/api/portfolio-projects/{{projectId}}
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "title": "Portafolio API v2",
+  "description": "API actualizada para administrar perfiles, proyectos y tecnologias.",
+  "liveUrl": "https://api.example.com/portfolio-v2",
+  "repoUrl": "https://github.com/harold/portfolio-api",
+  "coverImageUrl": "https://cdn.example.com/projects/portfolio-api-v2.png",
+  "isFeatured": true,
+  "sortOrder": 1
+}
+
+### Link technology to project
+POST {{Gateway_HostAddress}}/api/portfolio-projects/{{projectId}}/technologies/{{technologyId}}
+Authorization: Bearer {{accessToken}}
+Accept: application/json
+
+### Unlink technology from project
+DELETE {{Gateway_HostAddress}}/api/portfolio-projects/{{projectId}}/technologies/{{technologyId}}
+Authorization: Bearer {{accessToken}}
+Accept: application/json
+
+### Delete project
+DELETE {{Gateway_HostAddress}}/api/portfolio-projects/{{projectId}}
+Authorization: Bearer {{accessToken}}
+Accept: application/json
+
+### Delete technology
+DELETE {{Gateway_HostAddress}}/api/Technologies/{{technologyId}}
+Authorization: Bearer {{accessToken}}
+Accept: application/json

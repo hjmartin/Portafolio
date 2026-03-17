@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Portafolio.Application.Common;
 
-public sealed class PayWccOptions
+public sealed class Options
 {
 
     //aqui podemos  incluir cualquier configuración relacionada con PayWCC, como la URL de la API, claves de acceso, etc.

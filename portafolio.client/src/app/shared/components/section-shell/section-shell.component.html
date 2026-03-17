@@ -1,0 +1,8 @@
+<section class="section-shell">
+  <p *ngIf="eyebrow()" class="eyebrow">{{ eyebrow() }}</p>
+  <h1>{{ title() }}</h1>
+  <p *ngIf="description()" class="description">{{ description() }}</p>
+  <div class="section-body">
+    <ng-content></ng-content>
+  </div>
+</section>

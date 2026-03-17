@@ -1,0 +1,20 @@
+<div class="dashboard-shell">
+  <aside class="sidebar">
+    <a routerLink="/" class="brand">Portafolio Admin</a>
+
+    <nav class="sidebar-nav">
+      <a routerLink="/admin/portfolio" routerLinkActive="active">Perfil</a>
+      <a routerLink="/admin/projects" routerLinkActive="active">Proyectos</a>
+      <a routerLink="/admin/technologies" routerLinkActive="active">Tecnologias</a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <p>{{ authFacade.displayName() }}</p>
+      <button type="button" (click)="authFacade.logout()">Salir</button>
+    </div>
+  </aside>
+
+  <main class="dashboard-content">
+    <router-outlet></router-outlet>
+  </main>
+</div>

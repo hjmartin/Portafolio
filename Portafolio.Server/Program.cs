@@ -1,12 +1,22 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
 builder.Services.AddOpenApi();
+builder.Services.AddHealthChecks();
 
-// CORS
+var jwtIssuer = builder.Configuration["Jwt:Issuer"]
+    ?? throw new InvalidOperationException("Missing configuration: Jwt:Issuer");
+var jwtAudience = builder.Configuration["Jwt:Audience"]
+    ?? throw new InvalidOperationException("Missing configuration: Jwt:Audience");
+var jwtKey = builder.Configuration["Jwt:Key"]
+    ?? throw new InvalidOperationException("Missing configuration: Jwt:Key");
+
+var logger = LoggerFactory.Create(lb => lb.AddConsole()).CreateLogger("Gateway.Jwt");
+
 var allowedOrigins = (builder.Configuration.GetValue<string>("Cors:AllowedOrigins") ?? "")
     .Split(",", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
 
@@ -14,40 +24,67 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("default", policy =>
     {
-        policy.WithOrigins(allowedOrigins)
-              .AllowAnyMethod()
-              .AllowAnyHeader()
-              .WithExposedHeaders("cantidad-total-registros");
+        if (allowedOrigins.Length > 0)
+        {
+            policy.WithOrigins(allowedOrigins)
+                  .AllowAnyMethod()
+                  .AllowAnyHeader()
+                  .WithExposedHeaders("cantidad-total-registros");
+        }
     });
 });
 
-// JWT
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor
+                               | ForwardedHeaders.XForwardedProto
+                               | ForwardedHeaders.XForwardedHost;
+    options.KnownNetworks.Clear();
+    options.KnownProxies.Clear();
+});
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
-        options.RequireHttpsMetadata = false;
+        options.RequireHttpsMetadata = !builder.Environment.IsDevelopment();
+        options.MapInboundClaims = false;
+        options.IncludeErrorDetails = builder.Environment.IsDevelopment();
 
         options.TokenValidationParameters = new TokenValidationParameters
         {
-            ValidateIssuer = false,
-            ValidateAudience = false,
+            ValidateIssuer = true,
+            ValidIssuer = jwtIssuer,
+            ValidateAudience = true,
+            ValidAudience = jwtAudience,
+            ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = new SymmetricSecurityKey(
-                System.Text.Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!)
+                Encoding.UTF8.GetBytes(jwtKey)
             ),
             RoleClaimType = "role",
-            ClockSkew = TimeSpan.FromMinutes(1)
+            ClockSkew = TimeSpan.FromMinutes(5)
+        };
+
+        options.Events = new JwtBearerEvents
+        {
+            OnAuthenticationFailed = context =>
+            {
+                logger.LogWarning(context.Exception, "JWT auth failed in gateway");
+                return Task.CompletedTask;
+            }
         };
     });
 
 builder.Services.AddAuthorization(options =>
 {
+    options.AddPolicy("authenticated", policy =>
+        policy.RequireAuthenticatedUser());
+
     options.AddPolicy("admin", policy =>
         policy.RequireAuthenticatedUser()
               .RequireRole("Admin"));
 });
 
-// YARP
 builder.Services.AddReverseProxy()
     .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
 
@@ -57,8 +94,12 @@ if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
-
-app.UseHttpsRedirection();
+else
+{
+    app.UseHsts();
+    app.UseHttpsRedirection();
+}
+app.UseForwardedHeaders();
 
 app.UseRouting();
 
@@ -66,12 +107,9 @@ app.UseCors("default");
 app.UseAuthentication();
 app.UseAuthorization();
 
-// Si el gateway solo es proxy, esto es suficiente:
 app.MapGet("/secure/ping", () => Results.Ok("pong"))
    .RequireAuthorization();
 app.MapReverseProxy();
-
-// Si necesitas controllers, déjalo. Si no, puedes quitar Controllers completo.
-app.MapControllers();
+app.MapHealthChecks("/healthz");
 
 app.Run();

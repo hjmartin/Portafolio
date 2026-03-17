@@ -1,0 +1,54 @@
+:host {
+  display: block;
+}
+
+.auth-shell {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top left, rgba(236, 201, 75, 0.18), transparent 28%),
+    radial-gradient(circle at right, rgba(13, 110, 253, 0.16), transparent 34%),
+    linear-gradient(180deg, #f8f4ea 0%, #f3efe3 55%, #ece6d8 100%);
+}
+
+.topbar {
+  width: min(1180px, calc(100% - 2rem));
+  margin: 0 auto;
+  padding: 1.5rem 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.brand,
+.topnav a {
+  text-decoration: none;
+  color: #1f2937;
+}
+
+.brand {
+  font-size: 1.2rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.topnav {
+  display: flex;
+  gap: 1rem;
+}
+
+.topnav a {
+  padding: 0.55rem 0.85rem;
+  border-radius: 999px;
+}
+
+.topnav a.active,
+.topnav a:hover {
+  background: rgba(31, 41, 55, 0.08);
+}
+
+.auth-content {
+  width: min(1180px, calc(100% - 2rem));
+  margin: 0 auto;
+  padding: 2rem 0 4rem;
+}

@@ -15,13 +15,13 @@ public sealed class ServiceContext
     public IUnitOfWork Uow { get; }
     public IMapper Mapper { get; }
     public ILoggerFactory LoggerFactory { get; }
-    public IOptions<PayWccOptions> Options { get; }
+    public IOptions<Options> Options { get; }
 
     public ServiceContext(
         IUnitOfWork uow,
         IMapper mapper,
         ILoggerFactory loggerFactory,
-        IOptions<PayWccOptions> options)
+        IOptions<Options> options)
     {
         Uow = uow;
         Mapper = mapper;

@@ -1,14 +1,8 @@
-﻿using AutoMapper;
-using Microsoft.EntityFrameworkCore;
+using AutoMapper;
 using Portafolio.Application.Common.Exceptions;
 using Portafolio.Application.Dtos;
 using Portafolio.Application.Interfaces.Persistence;
 using Portafolio.Application.Interfaces.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Portafolio.Application.Services;
 
@@ -16,48 +10,60 @@ public class PortfolioProfileService : IPortfolioProfileService
 {
     private readonly IUnitOfWork _uow;
     private readonly IMapper _mapper;
+    private readonly IPortfolioProfileRepository _profiles;
 
-    public PortfolioProfileService(IUnitOfWork uow, IMapper mapper)
+    public PortfolioProfileService(
+        IUnitOfWork uow,
+        IMapper mapper,
+        IPortfolioProfileRepository profiles)
     {
         _uow = uow;
         _mapper = mapper;
+        _profiles = profiles;
     }
 
     public async Task<PortfolioProfileDto> CreateAsync(CreatePortfolioProfileDto dto)
     {
-    
-        var entity = _mapper.Map<PortfolioProfile>(dto);
+        var entity = PortfolioProfile.Create(
+            dto.FullName,
+            dto.Headline,
+            dto.Summary,
+            dto.Location,
+            dto.PublicEmail);
 
-        await _uow.Repo<PortfolioProfile>().AddAsync(entity);
+        await _profiles.AddAsync(entity);
         await _uow.SaveAsync();
 
         return _mapper.Map<PortfolioProfileDto>(entity);
     }
-    public async Task<PortfolioProfileDto?> GetByIdAsync(Guid id)
-    {
-        // Necesitas Query() en tu repo genérico para poder usar Include
-        var entity = await _uow.Repo<PortfolioProfile>()
-            .Query()
-            .Include(x => x.Projects)
-            .FirstOrDefaultAsync(x => x.Id == id);
 
-        return entity is null ? null : _mapper.Map<PortfolioProfileDto>(entity);
+    public async Task<PortfolioProfileDto> GetByIdAsync(Guid id)
+    {
+        var entity = await _profiles.GetByIdWithProjectsAsync(id, asNoTracking: true);
+
+        if (entity is null)
+            throw new NotFoundException("Profile no existe", "portfolio_profile_not_found");
+
+        return _mapper.Map<PortfolioProfileDto>(entity);
     }
 
     public async Task<PortfolioProfileDto> UpdateAsync(Guid id, UpdatePortfolioProfileDto dto)
     {
-        var repo = _uow.Repo<PortfolioProfile>();
+        var entity = await _profiles.GetByIdForUpdateAsync(id);
 
-        var entity = await repo.Query()
-            .Include(x => x.Projects)
-            .FirstOrDefaultAsync(x => x.Id == id);
+        if (entity is null)
+            throw new NotFoundException("Profile no existe", "portfolio_profile_not_found");
 
-        if (entity is null) throw new KeyNotFoundException("Profile no existe");
+        entity.UpdateDetails(
+            dto.FullName,
+            dto.Headline,
+            dto.Summary,
+            dto.Location,
+            dto.PublicEmail,
+            dto.PhotoUrl,
+            dto.ResumeUrl);
 
-        // Mapea encima del entity existente (EF tracking)
-        _mapper.Map(dto, entity);
-
-        repo.Update(entity);
+        _profiles.Update(entity);
         await _uow.SaveAsync();
 
         return _mapper.Map<PortfolioProfileDto>(entity);
